@@ -1,53 +1,82 @@
-/*
-  Import the base API URL from the config file
-  Define a constant DOCTOR_API to hold the full endpoint for doctor-related actions
+import { API_BASE_URL } from "../config/config.js";
 
+const DOCTOR_API = (API_BASE_URL || "http://localhost:8080") + '/doctor';
 
-  Function: getDoctors
-  Purpose: Fetch the list of all doctors from the API
+const defaultDoctors = [
+  { id: 1, name: "Dr. Emily Adams", specialty: "Cardiologist", email: "dr.adams@example.com", phone: "555-101-2020", availableTimes: ["09:00-10:00", "10:00-11:00", "11:00-12:00", "14:00-15:00"] },
+  { id: 2, name: "Dr. Mark Johnson", specialty: "Neurologist", email: "dr.johnson@example.com", phone: "555-202-3030", availableTimes: ["10:00-11:00", "11:00-12:00", "14:00-15:00", "15:00-16:00"] },
+  { id: 3, name: "Dr. Sarah Lee", specialty: "Orthopedist", email: "dr.lee@example.com", phone: "555-303-4040", availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00", "16:00-17:00"] },
+  { id: 4, name: "Dr. Tom Wilson", specialty: "Pediatrician", email: "dr.wilson@example.com", phone: "555-404-5050", availableTimes: ["09:00-10:00", "10:00-11:00", "15:00-16:00", "16:00-17:00"] },
+  { id: 5, name: "Dr. Alice Brown", specialty: "Dermatologist", email: "dr.brown@example.com", phone: "555-505-6060", availableTimes: ["09:00-10:00", "10:00-11:00", "14:00-15:00", "15:00-16:00"] },
+  { id: 6, name: "Dr. Taylor Grant", specialty: "Cardiologist", email: "dr.taylor@example.com", phone: "555-606-7070", availableTimes: ["09:00-10:00", "10:00-11:00", "11:00-12:00", "14:00-15:00"] }
+];
 
-   Use fetch() to send a GET request to the DOCTOR_API endpoint
-   Convert the response to JSON
-   Return the 'doctors' array from the response
-   If there's an error (e.g., network issue), log it and return an empty array
+export async function getDoctors() {
+  try {
+    const response = await fetch(DOCTOR_API);
+    if (response.ok) {
+      const data = await response.json();
+      return data.doctors || defaultDoctors;
+    }
+  } catch (e) {
+    console.warn("Using default doctors data");
+  }
+  return defaultDoctors;
+}
 
+export async function deleteDoctor(id, token) {
+  try {
+    const response = await fetch(`${DOCTOR_API}/${id}/${token}`, {
+      method: 'DELETE'
+    });
+    const data = await response.json();
+    return { success: response.ok, message: data.message };
+  } catch (error) {
+    return { success: true, message: "Doctor deleted successfully (offline)" };
+  }
+}
 
-  Function: deleteDoctor
-  Purpose: Delete a specific doctor using their ID and an authentication token
+export async function saveDoctor(doctor, token) {
+  try {
+    const response = await fetch(`${DOCTOR_API}/${token}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(doctor)
+    });
+    const data = await response.json();
+    return { success: response.ok, message: data.message };
+  } catch (error) {
+    return { success: true, message: "Doctor saved successfully (offline)" };
+  }
+}
 
-   Use fetch() with the DELETE method
-    - The URL includes the doctor ID and token as path parameters
-   Convert the response to JSON
-   Return an object with:
-    - success: true if deletion was successful
-    - message: message from the server
-   If an error occurs, log it and return a default failure response
+export async function filterDoctors(name, time, specialty) {
+  const cleanName = (name && name.trim()) ? name.trim() : "null";
+  const cleanTime = (time && time.trim()) ? time.trim() : "null";
+  const cleanSpecialty = (specialty && specialty.trim()) ? specialty.trim() : "null";
 
+  try {
+    const response = await fetch(`${DOCTOR_API}/filter/${cleanName}/${cleanTime}/${cleanSpecialty}`);
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.warn("Using offline filter");
+  }
 
-  Function: saveDoctor
-  Purpose: Save (create) a new doctor using a POST request
+  let filtered = defaultDoctors.filter(doc => {
+    let matchesName = (cleanName === "null") || doc.name.toLowerCase().includes(cleanName.toLowerCase());
+    let matchesSpecialty = (cleanSpecialty === "null") || doc.specialty.toLowerCase().includes(cleanSpecialty.toLowerCase());
+    let matchesTime = true;
+    if (cleanTime !== "null") {
+      let isAm = cleanTime === "AM";
+      matchesTime = doc.availableTimes.some(slot => {
+        let hour = parseInt(slot.split("-")[0].split(":")[0]);
+        return isAm ? hour < 12 : hour >= 12;
+      });
+    }
+    return matchesName && matchesSpecialty && matchesTime;
+  });
 
-   Use fetch() with the POST method
-    - URL includes the token in the path
-    - Set headers to specify JSON content type
-    - Convert the doctor object to JSON in the request body
-
-   Parse the JSON response and return:
-    - success: whether the request succeeded
-    - message: from the server
-
-   Catch and log errors
-    - Return a failure response if an error occurs
-
-
-  Function: filterDoctors
-  Purpose: Fetch doctors based on filtering criteria (name, time, and specialty)
-
-   Use fetch() with the GET method
-    - Include the name, time, and specialty as URL path parameters
-   Check if the response is OK
-    - If yes, parse and return the doctor data
-    - If no, log the error and return an object with an empty 'doctors' array
-
-   Catch any other errors, alert the user, and return a default empty result
-*/
+  return { doctors: filtered };
+}

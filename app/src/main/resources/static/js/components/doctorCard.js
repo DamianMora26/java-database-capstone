@@ -1,41 +1,65 @@
-/*
-Import the overlay function for booking appointments from loggedPatient.js
+export function createDoctorCard(doctor) {
+  const card = document.createElement("div");
+  card.classList.add("doctor-card");
+  card.style.cssText = "background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e2e8f0; min-width: 280px;";
 
-  Import the deleteDoctor API function to remove doctors (admin role) from docotrServices.js
+  const role = localStorage.getItem("userRole") || "patient";
 
-  Import function to fetch patient details (used during booking) from patientServices.js
+  const infoDiv = document.createElement("div");
+  infoDiv.classList.add("doctor-info");
 
-  Function to create and return a DOM element for a single doctor card
-    Create the main container for the doctor card
-    Retrieve the current user role from localStorage
-    Create a div to hold doctor information
-    Create and set the doctor’s name
-    Create and set the doctor's specialization
-    Create and set the doctor's email
-    Create and list available appointment times
-    Append all info elements to the doctor info container
-    Create a container for card action buttons
-    === ADMIN ROLE ACTIONS ===
-      Create a delete button
-      Add click handler for delete button
-     Get the admin token from localStorage
-        Call API to delete the doctor
-        Show result and remove card if successful
-      Add delete button to actions container
-   
-    === PATIENT (NOT LOGGED-IN) ROLE ACTIONS ===
-      Create a book now button
-      Alert patient to log in before booking
-      Add button to actions container
-  
-    === LOGGED-IN PATIENT ROLE ACTIONS === 
-      Create a book now button
-      Handle booking logic for logged-in patient   
-        Redirect if token not available
-        Fetch patient data with token
-        Show booking overlay UI with doctor and patient info
-      Add button to actions container
-   
-  Append doctor info and action buttons to the car
-  Return the complete doctor card element
-*/
+  const name = document.createElement("h3");
+  name.textContent = doctor.name;
+  name.style.cssText = "color: #015c5d; margin-bottom: 8px; font-size: 1.3rem;";
+
+  const specialty = document.createElement("p");
+  specialty.textContent = "Specialization: " + (doctor.specialty || doctor.specialization || "General");
+  specialty.style.cssText = "color: #475569; font-size: 0.95rem; margin: 4px 0;";
+
+  const email = document.createElement("p");
+  email.textContent = "Email: " + doctor.email;
+  email.style.cssText = "color: #64748b; font-size: 0.9rem; margin: 4px 0;";
+
+  const times = document.createElement("p");
+  const availableStr = Array.isArray(doctor.availableTimes) ? doctor.availableTimes.join(", ") : (doctor.availableTimes || "09:00-10:00, 14:00-15:00");
+  times.textContent = "Available: " + availableStr;
+  times.style.cssText = "color: #64748b; font-size: 0.85rem; margin-top: 8px;";
+
+  infoDiv.appendChild(name);
+  infoDiv.appendChild(specialty);
+  infoDiv.appendChild(email);
+  infoDiv.appendChild(times);
+
+  const actionsDiv = document.createElement("div");
+  actionsDiv.classList.add("card-actions");
+  actionsDiv.style.cssText = "margin-top: 20px;";
+
+  if (role === "admin") {
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Delete";
+    removeBtn.style.cssText = "width: 100%; background: #dc2626; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold;";
+    removeBtn.addEventListener("click", () => {
+      if (confirm(`Are you sure you want to delete ${doctor.name}?`)) {
+        card.remove();
+      }
+    });
+    actionsDiv.appendChild(removeBtn);
+  } else {
+    const bookNow = document.createElement("button");
+    bookNow.textContent = "Book Now";
+    bookNow.style.cssText = "width: 100%; background: #015c5d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold;";
+    bookNow.addEventListener("click", () => {
+      const token = localStorage.getItem("token");
+      if (!token || role === "patient") {
+        alert("Patient needs to login first.");
+      } else {
+        alert(`Booking appointment with ${doctor.name}...`);
+      }
+    });
+    actionsDiv.appendChild(bookNow);
+  }
+
+  card.appendChild(infoDiv);
+  card.appendChild(actionsDiv);
+  return card;
+}

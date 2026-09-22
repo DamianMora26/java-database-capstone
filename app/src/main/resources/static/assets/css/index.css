@@ -1,53 +1,190 @@
-/* this is the style sheet file for index.htlm  */
+/* this is the style sheet file for index.html */
 
-/* 
-**Global Reset (`*`)**
+/* Global Reset (*) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-* Remove all default margin and padding.
-* Use `border-box` for sizing to include padding and border in element size.
+/* Base (html, body) */
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f8fafc;
+}
 
-**Base (`html, body`)**
+/* Container & Layout Wrapper (.wrapper) */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-* Set height to 100% for full viewport layout.
-* Use the `'Roboto'` sans-serif font for modern, clean typography.
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-**Layout Wrapper (`.wrapper`)**
+/* Heading (h2) */
+h2 {
+  font-size: 48px;
+  margin-bottom: 40px;
+  color: #003e3e;
+  font-weight: bold;
+  font-family: 'Alegreya', 'Roboto', sans-serif;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
 
-* Use a vertical flexbox layout.
-* Ensure the wrapper covers at least the full height of the screen (`min-height: 100vh`).
+h2 span {
+  color: #A62B1F;
+}
 
-**Heading (`h2`)**
+/* Main Section (.main-content) */
+.main-content {
+  flex-grow: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-image: url("../images/defineRole/index.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 
-* Set a large font size (`48px`) for prominence.
-* Add a bottom margin of `50px` for spacing.
-* Use a dark teal color (`#003e3e`).
-* Make the font bold and use a blended font stack (`'Alegreya', 'Roboto', sans-serif`) for elegant styling.
+/* Role Buttons Container */
+.role-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
 
-**Main Section (`.main-content`)**
+/* Buttons (button) */
+button {
+  background-color: #015c5d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  width: 220px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
 
-* Allow the section to grow to fill space with `flex-grow: 1`.
-* Add `40px` of internal padding.
-* Center content both horizontally and vertically using `justify-content` and `align-items`.
-* Display items in a column direction.
-* Center all text.
-* Apply a full-screen background image with:
+button:hover {
+  background-color: #A62B1F;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
-  * `cover` size
-  * `center` positioning
-  * no repeat
-  * `fixed` attachment to keep image still during scroll
+button:active {
+  transform: translateY(0);
+}
 
-**Buttons (`button`)**
+/* Dashboard Buttons (.dashboard-btn) */
+.dashboard-btn {
+  background-color: #015c5d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  width: 220px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+}
 
-* Style with a teal green background (`#015c5d`) and white text.
-* Remove borders and round the corners (`12px`).
-* Use `10px 20px` padding and set width to `200px`.
-* Add a top margin of `10px` for spacing.
-* Enable pointer cursor and readable font size (`16px`).
-* On hover, change background color to bold red (`#A62B1F`).
+.dashboard-btn:hover {
+  background-color: #003e3e;
+}
 
-**Dashboard Buttons (`.dashboard-btn`)**
+/* Modal styles for role login */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
 
-* Use the same base green background (`#015c5d`) as the default button.
-* On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
- */
+.modal-content {
+  background-color: #ffffff;
+  margin: 10% auto;
+  padding: 35px 40px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 420px;
+  position: relative;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  font-size: 26px;
+  margin-bottom: 25px;
+  color: #015c5d;
+  font-family: 'Roboto', sans-serif;
+}
+
+.close {
+  color: #888;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.close:hover,
+.close:focus {
+  color: #A62B1F;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 3px rgba(1, 92, 93, 0.2);
+}
