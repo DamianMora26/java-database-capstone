@@ -59,76 +59,97 @@
     </div>
     <script type="module" src="../js/patientDashboard.js" defer></script>
     <script>
-        // Local fallback for rendering doctors when opened via file:// protocol
+        // Persistent doctor management with localStorage
+        function getStoredDoctors() {
+            let docs = null;
+            try {
+                const raw = localStorage.getItem("cmsDoctors");
+                if (raw) docs = JSON.parse(raw);
+            } catch(e) {}
+
+            if (!docs || docs.length === 0) {
+                docs = [
+                    { id: 100, name: "Dr. Joss Cia Kirk", specialty: "Neurologist", email: "dr.joss@example.com", phone: "5678905432", availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00"] },
+                    { id: 1, name: "Dr. Emily Adams", specialty: "Cardiologist", email: "dr.adams@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "14:00-15:00"] },
+                    { id: 2, name: "Dr. Mark Johnson", specialty: "Neurologist", email: "dr.johnson@example.com", availableTimes: ["10:00-11:00", "11:00-12:00", "15:00-16:00"] },
+                    { id: 3, name: "Dr. Sarah Lee", specialty: "Orthopedic", email: "dr.lee@example.com", availableTimes: ["09:00-10:00", "14:00-15:00", "16:00-17:00"] },
+                    { id: 4, name: "Dr. Tom Wilson", specialty: "Pediatrician", email: "dr.wilson@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "15:00-16:00"] },
+                    { id: 5, name: "Dr. Alice Brown", specialty: "Dermatologist", email: "dr.brown@example.com", availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00"] },
+                    { id: 6, name: "Dr. Taylor Grant", specialty: "General", email: "dr.taylor@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "16:00-17:00"] }
+                ];
+                localStorage.setItem("cmsDoctors", JSON.stringify(docs));
+            }
+            return docs;
+        }
+
+        function renderAllDoctorCards(customList) {
+            const content = document.getElementById("content");
+            if (!content) return;
+            const docs = customList || getStoredDoctors();
+            content.innerHTML = "";
+            const role = localStorage.getItem("userRole") || "patient";
+
+            docs.forEach(doc => {
+                const card = document.createElement("div");
+                card.className = "doctor-card";
+                card.innerHTML = `
+                    <div class="doctor-info">
+                        <h3>${doc.name}</h3>
+                        <p><strong>Specialization:</strong> ${doc.specialty}</p>
+                        <p><strong>Email:</strong> ${doc.email}</p>
+                        <p><strong>Available:</strong> ${(doc.availableTimes || ["09:00-10:00", "14:00-15:00"]).join(", ")}</p>
+                    </div>
+                    <div class="card-actions">
+                        ${role === "admin" 
+                            ? `<button style="background: #dc2626; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;" onclick="deleteStoredDoctor(${doc.id})">Delete</button>` 
+                            : `<button style="background: #015c5d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;" onclick="alert('Cita reservada con éxito con ${doc.name}')">Book Now</button>`
+                        }
+                    </div>
+                `;
+                content.appendChild(card);
+            });
+        }
+
+        window.deleteStoredDoctor = function(id) {
+            let docs = getStoredDoctors().filter(d => d.id !== id);
+            localStorage.setItem("cmsDoctors", JSON.stringify(docs));
+            renderAllDoctorCards();
+        };
+
+        window.renderAllDoctorCards = renderAllDoctorCards;
+
         window.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const content = document.getElementById("content");
-                if (content && content.children.length === 0) {
-                    const defaultDocs = [
-                        { id: 1, name: "Dr. Emily Adams", specialty: "Cardiologist", email: "dr.adams@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "14:00-15:00"] },
-                        { id: 2, name: "Dr. Mark Johnson", specialty: "Neurologist", email: "dr.johnson@example.com", availableTimes: ["10:00-11:00", "11:00-12:00", "15:00-16:00"] },
-                        { id: 3, name: "Dr. Sarah Lee", specialty: "Orthopedic", email: "dr.lee@example.com", availableTimes: ["09:00-10:00", "14:00-15:00", "16:00-17:00"] },
-                        { id: 4, name: "Dr. Tom Wilson", specialty: "Pediatrician", email: "dr.wilson@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "15:00-16:00"] },
-                        { id: 5, name: "Dr. Alice Brown", specialty: "Dermatologist", email: "dr.brown@example.com", availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00"] },
-                        { id: 6, name: "Dr. Taylor Grant", specialty: "General", email: "dr.taylor@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "16:00-17:00"] }
-                    ];
+            renderAllDoctorCards();
 
-                    function renderCards(docs) {
-                        content.innerHTML = "";
-                        const role = localStorage.getItem("userRole") || "patient";
-                        docs.forEach(doc => {
-                            const card = document.createElement("div");
-                            card.className = "doctor-card";
-                            card.innerHTML = `
-                                <div class="doctor-info">
-                                    <h3>${doc.name}</h3>
-                                    <p><strong>Specialization:</strong> ${doc.specialty}</p>
-                                    <p><strong>Email:</strong> ${doc.email}</p>
-                                    <p><strong>Available:</strong> ${doc.availableTimes.join(", ")}</p>
-                                </div>
-                                <div class="card-actions">
-                                    ${role === "admin" 
-                                        ? `<button style="background: #dc2626; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;" onclick="this.closest('.doctor-card').remove()">Delete</button>` 
-                                        : `<button style="background: #015c5d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;" onclick="alert('Cita reservada con éxito con ${doc.name}')">Book Now</button>`
-                                    }
-                                </div>
-                            `;
-                            content.appendChild(card);
+            const searchInput = document.getElementById("searchBar");
+            const specialtySelect = document.getElementById("filterSpecialty");
+            const timeSelect = document.getElementById("filterTime");
+
+            function filterDocs() {
+                const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+                const spec = specialtySelect ? specialtySelect.value : "";
+                const time = timeSelect ? timeSelect.value : "";
+
+                const allDocs = getStoredDoctors();
+                const filtered = allDocs.filter(d => {
+                    const matchName = !query || d.name.toLowerCase().includes(query);
+                    const matchSpec = !spec || d.specialty.toLowerCase() === spec.toLowerCase();
+                    let matchTime = true;
+                    if (time && d.availableTimes) {
+                        const isAm = time === "AM";
+                        matchTime = d.availableTimes.some(slot => {
+                            const h = parseInt(slot.split("-")[0].split(":")[0]);
+                            return isAm ? h < 12 : h >= 12;
                         });
                     }
+                    return matchName && matchSpec && matchTime;
+                });
+                renderAllDoctorCards(filtered);
+            }
 
-                    renderCards(defaultDocs);
-
-                    const searchInput = document.getElementById("searchBar");
-                    const specialtySelect = document.getElementById("filterSpecialty");
-                    const timeSelect = document.getElementById("filterTime");
-
-                    function filterDocs() {
-                        const query = (searchInput.value || "").toLowerCase();
-                        const spec = specialtySelect.value;
-                        const time = timeSelect.value;
-
-                        const filtered = defaultDocs.filter(d => {
-                            const matchName = d.name.toLowerCase().includes(query);
-                            const matchSpec = !spec || d.specialty.toLowerCase() === spec.toLowerCase();
-                            let matchTime = true;
-                            if (time) {
-                                const isAm = time === "AM";
-                                matchTime = d.availableTimes.some(slot => {
-                                    const h = parseInt(slot.split("-")[0].split(":")[0]);
-                                    return isAm ? h < 12 : h >= 12;
-                                });
-                            }
-                            return matchName && matchSpec && matchTime;
-                        });
-                        renderCards(filtered);
-                    }
-
-                    if (searchInput) searchInput.addEventListener("input", filterDocs);
-                    if (specialtySelect) specialtySelect.addEventListener("change", filterDocs);
-                    if (timeSelect) timeSelect.addEventListener("change", filterDocs);
-                }
-            }, 300);
+            if (searchInput) searchInput.addEventListener("input", filterDocs);
+            if (specialtySelect) specialtySelect.addEventListener("change", filterDocs);
+            if (timeSelect) timeSelect.addEventListener("change", filterDocs);
         });
     </script>
 </body>

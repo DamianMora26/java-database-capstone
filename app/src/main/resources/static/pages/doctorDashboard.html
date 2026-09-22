@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/images/logo/logo.png" />
+    <title>Hospital CMS - Doctor Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/adminDashboard.css">
+    <link rel="stylesheet" href="../assets/css/doctorDashboard.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../js/render.js" defer></script>
+    <script src="../js/util.js" defer></script>
+    <script src="../js/components/header.js" defer></script>
+    <script src="../js/components/footer.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <div id="header"></div>
+            <main class="main-content" style="padding: 40px; background-image: url('../assets/images/defineRole/index.png'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 80vh;">
+                <h2 style="color: #015c5d; margin-bottom: 25px;">Doctor Appointments</h2>
+                <div style="max-width: 900px; width: 100%; margin: 0 auto; background: white; padding: 25px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div class="filter-wrapper" style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; width: 100%;">
+                        <input type="text" id="searchBar" class="searchBar" placeholder="Search by patient name..." style="flex: 1; height: 38px; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 0;" />
+                        <button id="todayButton" class="btn" style="background-color: #015c5d; color: white; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; height: 38px; margin-top: 0; width: auto;">Today's Appointments</button>
+                        <input type="date" id="datePicker" class="filter-select" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; height: 38px; width: auto;" />
+                    </div>
+                    <table id="patientTable" class="table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #015c5d; color: white;">
+                                <th style="padding: 12px 14px; text-align: left; border-radius: 6px 0 0 0;">Patient ID</th>
+                                <th style="padding: 12px 14px; text-align: left;">Name</th>
+                                <th style="padding: 12px 14px; text-align: left;">Phone No.</th>
+                                <th style="padding: 12px 14px; text-align: left;">Email</th>
+                                <th style="padding: 12px 14px; text-align: center; border-radius: 0 6px 0 0;">Prescription</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 12px 14px; text-align: left; font-weight: bold; color: #334155;">26</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #1e293b;">John Smith</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">888-000-2222</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">john.smith@example.com</td>
+                                <td style="padding: 12px 14px; text-align: center;">
+                                    <button class="btn" style="background-color: #047857; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto; margin-top: 0;" onclick="alert('Recetario médico para John Smith')">+ Add</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc;">
+                                <td style="padding: 12px 14px; text-align: left; font-weight: bold; color: #334155;">27</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #1e293b;">Emily Rose</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">888-000-3333</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">emily.rose@example.com</td>
+                                <td style="padding: 12px 14px; text-align: center;">
+                                    <button class="btn" style="background-color: #047857; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto; margin-top: 0;" onclick="alert('Recetario médico para Emily Rose')">+ Add</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 12px 14px; text-align: left; font-weight: bold; color: #334155;">28</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #1e293b;">Michael Jordan</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">888-000-4444</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">michael.j@example.com</td>
+                                <td style="padding: 12px 14px; text-align: center;">
+                                    <button class="btn" style="background-color: #047857; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto; margin-top: 0;" onclick="alert('Recetario médico para Michael Jordan')">+ Add</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc;">
+                                <td style="padding: 12px 14px; text-align: left; font-weight: bold; color: #334155;">29</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #1e293b;">Sarah Connor</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">888-000-5555</td>
+                                <td style="padding: 12px 14px; text-align: left; color: #475569;">sarah.c@example.com</td>
+                                <td style="padding: 12px 14px; text-align: center;">
+                                    <button class="btn" style="background-color: #047857; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto; margin-top: 0;" onclick="alert('Recetario médico para Sarah Connor')">+ Add</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+            <div id="footer"></div>
+        </div>
+    </div>
+</body>
+
+</html>

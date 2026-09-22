@@ -142,11 +142,50 @@ function handleHeaderAction(type) {
     `;
     modal.style.display = 'block';
     document.getElementById('newDocBtn').onclick = function () {
-      const name = document.getElementById('newDocName').value || "Dr. Nuevo";
-      const spec = document.getElementById('newDocSpec').value || "General";
-      alert(`Doctor ${name} (${spec}) guardado con éxito.`);
+      const rawName = (document.getElementById('newDocName').value || "Joss Cia Kirk").trim();
+      const docName = rawName.startsWith("Dr.") ? rawName : ("Dr. " + rawName);
+      const docSpec = (document.getElementById('newDocSpec').value || "Neurologist").trim();
+      const docEmail = (document.getElementById('newDocEmail').value || "dr.joss@example.com").trim();
+      const docPhone = (document.getElementById('newDocPhone').value || "5678905432").trim();
+
+      let doctors = [];
+      try {
+        doctors = JSON.parse(localStorage.getItem("cmsDoctors") || "[]");
+      } catch (e) {
+        doctors = [];
+      }
+
+      if (!doctors || doctors.length === 0) {
+        doctors = [
+          { id: 1, name: "Dr. Emily Adams", specialty: "Cardiologist", email: "dr.adams@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "14:00-15:00"] },
+          { id: 2, name: "Dr. Mark Johnson", specialty: "Neurologist", email: "dr.johnson@example.com", availableTimes: ["10:00-11:00", "11:00-12:00", "15:00-16:00"] },
+          { id: 3, name: "Dr. Sarah Lee", specialty: "Orthopedic", email: "dr.lee@example.com", availableTimes: ["09:00-10:00", "14:00-15:00", "16:00-17:00"] },
+          { id: 4, name: "Dr. Tom Wilson", specialty: "Pediatrician", email: "dr.wilson@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "15:00-16:00"] },
+          { id: 5, name: "Dr. Alice Brown", specialty: "Dermatologist", email: "dr.brown@example.com", availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00"] },
+          { id: 6, name: "Dr. Taylor Grant", specialty: "General", email: "dr.taylor@example.com", availableTimes: ["09:00-10:00", "10:00-11:00", "16:00-17:00"] }
+        ];
+      }
+
+      const newDoctor = {
+        id: Date.now(),
+        name: docName,
+        specialty: docSpec,
+        email: docEmail,
+        phone: docPhone,
+        availableTimes: ["09:00-10:00", "11:00-12:00", "14:00-15:00"]
+      };
+
+      doctors.unshift(newDoctor);
+      localStorage.setItem("cmsDoctors", JSON.stringify(doctors));
+
+      alert(`¡Doctor ${docName} (${docSpec}) agregado y guardado con éxito!`);
       modal.style.display = 'none';
-      location.reload();
+
+      if (typeof window.renderAllDoctorCards === 'function') {
+        window.renderAllDoctorCards();
+      } else {
+        location.reload();
+      }
     };
   }
 
